@@ -7,4 +7,5 @@
                  [clj-icalendar "0.1.4"]
                  [clj-time "0.13.0"]
                  [pandect "0.6.1"]
-                 [clj-aws-s3 "0.3.10"]])
+                 [clj-aws-s3 "0.3.10" :exclusions [joda-time]]
+                 [hickory "0.7.0"]])

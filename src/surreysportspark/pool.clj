@@ -25,14 +25,17 @@
 
 (def pred-50m-lane-swim? (tt/tagged-predicate #{:50m :lane}))
 
+(def closures (timetable.changes/changes-file "test/surreysportspark/changes.html" surreysportspark.changes/parse-pool-closures))
+
 (->> swimming-spring-term-days
      (map #(t/from-time-zone % tz-london))
      (map spring-term-events)
      (tt/flatten-events)
      (filter pred-50m-lane-swim?)
+     (remove #(tt/overlap-intervals? % closures))
      (map tt/create-event)
      (tt/append-events-to-cal (tt/new-cal))
      (tt/print-cal)
-     (tt/publish bucket-name "surrey-sports-park/50m-lane-swimming.ics")
+     ;(tt/publish bucket-name "surrey-sports-park/50m-lane-swimming.ics")
      (.getETag)
      (println))

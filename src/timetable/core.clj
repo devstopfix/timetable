@@ -21,6 +21,12 @@
       (-> d (.withHourOfDay end-hour)   (.withMinuteOfHour end-min))
       title tags)))
 
+(defn overlap-intervals? [event intervals]
+  "Returns nil if the given event does not overlap any of the intervals,
+   otherwise an interval"
+  (let [interval (t/interval (.start-time event) (.end-time event))]
+    (some #(t/overlaps? % interval) intervals)))
+
 (def digest-list-of-strings (comp sha1 clojure.string/upper-case clojure.string/join))
 
 (defn event-id [event salt]
