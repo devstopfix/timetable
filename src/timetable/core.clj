@@ -1,6 +1,7 @@
 (ns timetable.core
   (:require [clj-icalendar.core :as ical]
             [clj-time.core :as t]
+            [clj-time.format :as f]
             [clj-time.local :as l]
             [clj-time.periodic :as p]
             [clj-time.predicates :as pr]
@@ -98,3 +99,9 @@
                    {:content-type ICAL-MIME-TYPE
                     :cache-control (format "max-age=%d" 360) })))
 
+(defn publish-with-timestamp [bucket key ^String cal]
+  "Publish the calendar to the bucket, and append current timestamp to key"
+  (let [custom-formatter (f/formatter "yyyy.MM.dd.HH")
+        suffix (f/unparse custom-formatter (t/now))
+        key    (str key "."  suffix)]
+    (publish bucket key cal)))
