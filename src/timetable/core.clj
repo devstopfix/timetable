@@ -1,6 +1,7 @@
 (ns timetable.core
   (:require [clj-icalendar.core :as ical]
             [clj-time.core :as t]
+            [clj-time.format :as f]
             [clj-time.local :as l]
             [clj-time.periodic :as p]
             [clj-time.predicates :as pr]
@@ -20,6 +21,12 @@
       (-> d (.withHourOfDay start-hour) (.withMinuteOfHour start-min))
       (-> d (.withHourOfDay end-hour)   (.withMinuteOfHour end-min))
       title tags)))
+
+(defn overlap-intervals? [event intervals]
+  "Returns nil if the given event does not overlap any of the intervals,
+   otherwise an interval"
+  (let [interval (t/interval (.start-time event) (.end-time event))]
+    (some #(t/overlaps? % interval) intervals)))
 
 (def digest-list-of-strings (comp sha1 clojure.string/upper-case clojure.string/join))
 
@@ -92,3 +99,9 @@
                    {:content-type ICAL-MIME-TYPE
                     :cache-control (format "max-age=%d" 360) })))
 
+(defn publish-with-timestamp [bucket key ^String cal]
+  "Publish the calendar to the bucket, and append current timestamp to key"
+  (let [custom-formatter (f/formatter "yyyy.MM.dd.HH")
+        suffix (f/unparse custom-formatter (t/now))
+        key    (str key "."  suffix)]
+    (publish bucket key cal)))

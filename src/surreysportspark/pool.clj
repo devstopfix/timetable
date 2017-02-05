@@ -1,7 +1,9 @@
 (ns surreysportspark.pool
   (:require [clj-time.core :as t]
             [clj-time.predicates :as pr]
-            [timetable.core :as tt]))
+            [surreysportspark.changes :as sspc]
+            [timetable.core :as tt]
+            [timetable.changes :as tc]))
 
 ; All our Events are in London (GMT or BST)
 (def tz-london (t/time-zone-for-id "Europe/London"))
@@ -25,14 +27,22 @@
 
 (def pred-50m-lane-swim? (tt/tagged-predicate #{:50m :lane}))
 
-(->> swimming-spring-term-days
-     (map #(t/from-time-zone % tz-london))
-     (map spring-term-events)
-     (tt/flatten-events)
-     (filter pred-50m-lane-swim?)
-     (map tt/create-event)
-     (tt/append-events-to-cal (tt/new-cal))
-     (tt/print-cal)
-     (tt/publish bucket-name "surrey-sports-park/50m-lane-swimming.ics")
-     (.getETag)
-     (println))
+(defn gen-events [days]
+  (->> days
+       (map #(t/from-time-zone % tz-london))
+       (map spring-term-events)
+       (tt/flatten-events)))
+
+(def changes-url "http://www.surreysportspark.co.uk/guestinformation/changes/")
+
+(defn make-calendar []
+  (let [closures (tc/changes-url changes-url sspc/parse-pool-closures)]
+    (->> (gen-events swimming-spring-term-days)
+         (filter pred-50m-lane-swim?)
+         (remove #(tt/overlap-intervals? % closures))
+         (map tt/create-event)
+         (tt/append-events-to-cal (tt/new-cal))
+         (tt/print-cal)
+         (tt/publish-with-timestamp bucket-name "surrey-sports-park/50m-lane-swimming.ics")
+         ;(.getETag)
+         (println))))
