@@ -1,0 +1,9 @@
+aws lambda create-function \
+    --region eu-west-2 \
+    --function-name lambda-timetable-poller \
+    --zip-file fileb://$(pwd)/target/surreysportspark-1.0.0.jar \
+    --role arn:aws:iam::$AWS_ACCOUNT_ID:role/lambda_basic_execution \
+    --handler surreysportspark.aws.RunLambdaFn \
+    --runtime java8 \
+    --timeout 15 \
+    --memory-size 256

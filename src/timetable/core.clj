@@ -91,8 +91,8 @@
          (re-matches #"[0-9a-zA-z\/\-\.]+" key)
          (.startsWith cal "BEGIN:VCALENDAR")
          (.endsWith   cal "END:VCALENDAR")]}
-  (let [access-key (System/getenv "AWS-ACCESS-KEY")
-        secret-key (System/getenv "AWS-SECRET-KEY")
+  (let [access-key (System/getenv "AWS_ACCESS_KEY")
+        secret-key (System/getenv "AWS_SECRET_KEY")
         cred {:access-key access-key
               :secret-key secret-key}]
     (s3/put-object cred bucket key cal

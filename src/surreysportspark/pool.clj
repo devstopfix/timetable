@@ -9,7 +9,7 @@
 (def tz-london (t/time-zone-for-id "Europe/London"))
 
 ; We publish calenders to S3 bucket
-(def bucket-name (System/getenv "S3-BUCKET"))
+(def bucket-name (System/getenv "S3_BUCKET"))
 
 ; http://www.surreysportspark.co.uk/media/PDFs/4759%20SSP%20Adult%20Spring%202017%20Swimming%20Timetable%20A4.pdf
 (def swimming-spring-term-days
@@ -44,5 +44,5 @@
          (tt/append-events-to-cal (tt/new-cal))
          (tt/print-cal)
          (tt/publish-with-timestamp bucket-name "surrey-sports-park/50m-lane-swimming.ics")
-         ;(.getETag)
+         (.getETag)
          (println))))

@@ -36,7 +36,6 @@
 (defn entries [loc]
   (loop [loc (zip/right loc)
          paragraphs []]
-    (clojure.pprint/pprint (zip/node loc))
     (if (= :p (:tag (zip/node loc)))
       (recur
         (-> loc (zip/right))
