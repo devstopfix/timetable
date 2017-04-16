@@ -12,16 +12,15 @@
 (def bucket-name (System/getenv "S3_BUCKET"))
 
 ; http://www.surreysportspark.co.uk/media/PDFs/4759%20SSP%20Adult%20Spring%202017%20Swimming%20Timetable%20A4.pdf
-(def swimming-spring-term-days
-  (tt/days-seq (t/date-time 2017 1 9) (t/date-time 2017 4 2)))
+(def swimming-summer-term-days
+  (tt/days-seq (t/date-time 2017 4 3) (t/date-time 2017 7 9)))
 
 (defn spring-term-events [d]
   "Return a list of events for the given day, or nil if no events"
   (cond
     (pr/saturday? d) [(tt/new-event d [ 9 00] [11 00] "50m Lane Swim" #{:50m :lane})
-                      (tt/new-event d [11 30] [16 30] "25m Lane Swim" #{:25m :lane :shallow})
-                      (tt/new-event d [11 00] [14 00] "Family Swim"   #{:family :shallow})
-                      (tt/new-event d [16 30] [18 00] "25m Lane Swim" #{:25m :lane})]
+                      (tt/new-event d [11 30] [14 00] "Family Swim"   #{:family :shallow})
+                      (tt/new-event d [11 30] [16 30] "25m Lane Swim" #{:25m :lane :shallow})]
     (pr/sunday? d)   [(tt/new-event d [11 00] [17 00] "50m Lane Swim" #{:50m :lane :shallow})
                       (tt/new-event d [11 00] [13 30] "Family Swim"   #{:family :shallow})]))
 
@@ -37,7 +36,7 @@
 
 (defn make-calendar []
   (let [closures (tc/changes-url changes-url sspc/parse-pool-closures)]
-    (->> (gen-events swimming-spring-term-days)
+    (->> (gen-events swimming-summer-term-days)
          (filter pred-50m-lane-swim?)
          (remove #(tt/overlap-intervals? % closures))
          (map tt/create-event)
