@@ -1,4 +1,4 @@
-(defproject timetable "1.0.0"
+(defproject timetable "1.17.106"
   :description "Generate iCal from timetables"
   :url "https://github.com/devstopfix/timetable"
   :license {:name "Eclipse Public License"
